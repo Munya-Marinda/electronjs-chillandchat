@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-time Messaging</title>
+    <style>
+      #chat {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+      }
+      #chat p {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Messaging App</h1>
+    <div id="chat"></div>
+    <textarea
+      id="messageInput"
+      placeholder="Type a message..."
+      style="width: 300px; height: 100px"
+    ></textarea>
+    <button onclick="sendMessage()">Send</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      // Listen for incoming messages and display them
+      socket.on("message", (data) => {
+        const chat = document.getElementById("chat");
+        const messageElement = document.createElement("p");
+        messageElement.innerText = `User: ${data.message}`;
+        chat.appendChild(messageElement);
+      });
+
+      // Function to send a message to the server
+      function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const message = input.value;
+        if (message) {
+          // Emit the message to the server
+          socket.emit("message", { message });
+
+          // Display the message locally
+          const chat = document.getElementById("chat");
+          const messageElement = document.createElement("p");
+          messageElement.innerText = `Me: ${message}`;
+          chat.appendChild(messageElement);
+
+          // Clear the input field
+          input.value = "";
+        }
+      }
+    </script>
+  </body>
+</html>
